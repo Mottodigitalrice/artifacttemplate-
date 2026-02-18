@@ -37,21 +37,29 @@ A minimal template for creating beautiful, shareable static pages — reports, d
 ```bash
 npm run dev          # Start dev server
 npm run build        # Static export to out/
-npm run deploy       # Build + copy to VPS
+npm run setup        # First-time: clone repo + install deps on VPS
+npm run deploy       # Push + build on VPS + deploy (~40s)
 ```
 
 ## Deployment
 
-Static export goes to `out/`. Deploy to VPS:
-```bash
-# Build outputs to out/
-npm run build
+Builds happen on the VPS (faster, avoids local memory issues). First-time setup:
 
-# Deploy to VPS (adjust path per project)
-scp -r out/* root@107.174.181.105:/var/www/artifacts/PROJECT_NAME/
+1. Create GitHub repo: `gh repo create Mottodigitalrice/PROJECT_NAME --public --source=. --push`
+2. Set `basePath: "/artifacts/PROJECT_NAME"` in `next.config.ts`
+3. Run `npm run setup` (clones repo + installs deps on VPS — one time only)
+4. Run `npm run deploy` (push + pull + build + deploy — ~40s)
+
+Live at: `https://vps.mottodigital.jp/artifacts/PROJECT_NAME/`
+
+Add a Caddy route if not already configured:
 ```
-
-Caddy serves it at `https://vps.mottodigital.jp/artifacts/PROJECT_NAME/`
+handle_path /artifacts/PROJECT_NAME/* {
+    root * /var/www/artifacts/PROJECT_NAME
+    try_files {path} {path}.html /index.html
+    file_server
+}
+```
 
 ## Page Types (Examples)
 

@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "deploy": "next build && scp -r out/* root@107.174.181.105:/var/www/artifacts/$npm_package_name/",
+    "setup": "ssh root@107.174.181.105 \"mkdir -p /opt/artifacts && cd /opt/artifacts && git clone https://github.com/Mottodigitalrice/$npm_package_name.git && cd $npm_package_name && npm install\"",
+    "deploy": "git push origin main && ssh root@107.174.181.105 \"cd /opt/artifacts/$npm_package_name && git pull && npx next build && mkdir -p /var/www/artifacts/$npm_package_name && rm -rf /var/www/artifacts/$npm_package_name/* && cp -r out/* /var/www/artifacts/$npm_package_name/ && echo DEPLOYED\"",
     "lint": "eslint"
   },
   "dependencies": {
